@@ -21,7 +21,6 @@ export default function App() {
 		const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appId=${process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY}&units=${newUnit ? newUnit : unit}`);
 		
 		const result = await response.json();
-		console.log(result);
 		
 		if (result.cod === '404') {
 			return setErrorMessage('No city found, please try again');
@@ -67,10 +66,9 @@ export default function App() {
 				</div>
 			</main>
 			
-			<div className={'flex items-center justify-center mt-12 grow'}>
+			<div className={'flex items-center justify-center grow overflow-y-auto pb-12'}>
 				<ChatBot></ChatBot>
 			</div>
-			
 		</>
 	)
 }
