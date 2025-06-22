@@ -18,7 +18,7 @@ export default function App() {
 		// Avoid using the API if there's nothing written
 		if (!location.length) return setErrorMessage('Field cannot be empty');
 		
-		const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appId=${"fc7d8227a7aa8b3bb26114f539a381fa"}&units=${newUnit ? newUnit : unit}`);
+		const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appId=${process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY}&units=${newUnit ? newUnit : unit}`);
 		
 		const result = await response.json();
 		console.log(result);
@@ -50,7 +50,7 @@ export default function App() {
 					
 					{/* Switch to a Pipe */}
 					{currentWeather && (
-						<p>{currentWeather}{unit === 'metric' ? 'C' : unit === 'imperial' ? 'F' : 'K'}</p>
+						<p>{currentWeather + (unit === 'metric' ? 'C' : unit === 'imperial' ? 'F' : 'K')}</p>
 					)}
 					
 					{errorMessage && (
