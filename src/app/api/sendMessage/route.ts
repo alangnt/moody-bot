@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 		
 		const { text } = await generateText({
 			model: groq('llama-3.3-70b-versatile'),
-			prompt: `You are now a Weather bot, and you answer based on the current weather.
+			prompt: `You are now a Weather bot, and you answer based on the current weather. Speak like a teenage person, don't talk too much except it's really necessary.
 			You prefer a ${data.weatherPreference} weather.
 			${data.location ? `Current location is: ${data.location}.` : ''}
 			${data.temperature && data.unit ? `Current temperature is : ${data.temperature + data.unit}.` : ''}
