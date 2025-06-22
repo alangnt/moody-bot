@@ -8,11 +8,13 @@ export async function POST(req: NextRequest) {
 	
 	try {
 		const data = await req.json();
-		if (!data) return NextResponse.json({ message: 'No message found' }, { status: 409 });
+		if (!data.content || !data.role) return NextResponse.json({ message: 'No message found' }, { status: 409 });
 		
 		const { text } = await generateText({
 			model: groq('llama-3.3-70b-versatile'),
-			prompt: data.content,
+			prompt: `You are now a Weather bot, and you answer based on the current weather. You prefer sunny places.
+			${data.temperature && data.unit ? `Current temperature is : ${data.temperature + data.unit}` : ''}
+			User message is : ${data.content}`,
 		});
 		
 		return NextResponse.json({ message: text, role: 'bot' }, { status: 200 });

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Header from '@/components/Header';
 import ChatBot from "@/components/core/ChatBot";
 
-type Unit = 'metric' | 'imperial' | 'standard';
+export type Unit = 'metric' | 'imperial' | 'standard';
 
 export default function App() {
 	const [location, setLocation] = useState<string>('');
@@ -67,7 +67,7 @@ export default function App() {
 			</main>
 			
 			<div className={'flex items-center justify-center grow overflow-y-auto pb-12'}>
-				<ChatBot></ChatBot>
+				<ChatBot temperature={currentWeather} unit={unit}></ChatBot>
 			</div>
 		</>
 	)
