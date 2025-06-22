@@ -24,9 +24,9 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={'overscroll-none'}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen max-h-screen h-[100dvh] overflow-y-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen max-h-screen h-[100dvh] overflow-y-hidden overscroll-none`}
       >
         {children}
       </body>
