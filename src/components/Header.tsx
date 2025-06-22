@@ -1,18 +1,18 @@
-'use client'
-
-import { useState } from 'react';
 import { LucideIcon, Sun, CloudRain } from 'lucide-react';
 
-type Weather = 'sunny' | 'rainy'
+export type Weather = 'sunny' | 'rainy'
 type WeatherItem = {
 	value: Weather;
 	icon: LucideIcon;
 	selectedWeatherClasses: string;
 }
 
-export default function Header() {
-	const [weatherPreference, setWeatherPreference] = useState<Weather>('sunny');
-	
+interface Props {
+	weatherPreference: Weather;
+	setWeatherPreference: (weather: Weather) => void;
+}
+
+export default function Header({ weatherPreference, setWeatherPreference }: Props) {
 	const weatherList: WeatherItem[] = [
 		{ value: 'sunny', icon: Sun, selectedWeatherClasses: 'bg-yellow-300 text-background' },
 		{ value: 'rainy', icon: CloudRain, selectedWeatherClasses: 'bg-blue-600 text-background' }

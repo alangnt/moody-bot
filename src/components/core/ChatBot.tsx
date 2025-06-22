@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { RefreshCcw } from 'lucide-react';
 import { Unit } from "@/app/page";
+import { Weather } from "@/components/Header";
 
 type Role = 'user' | 'bot';
 type Message = {
@@ -13,9 +14,10 @@ type Message = {
 interface Props {
 	temperature: string | undefined;
 	unit: Unit;
+	weatherPreference: Weather;
 }
 
-export default function ChatBot({ temperature, unit }: Props) {
+export default function ChatBot({ temperature, unit, weatherPreference }: Props) {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	
 	const [message, setMessage] = useState<string>('');
@@ -36,7 +38,7 @@ export default function ChatBot({ temperature, unit }: Props) {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ content: message, role: 'user', temperature: temperature, unit: unit }),
+				body: JSON.stringify({ content: message, role: 'user', temperature: temperature, unit: unit, weatherPreference: weatherPreference }),
 			})
 			if (!response.ok) return console.log(response.status);
 			

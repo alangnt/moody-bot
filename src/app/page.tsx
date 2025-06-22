@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react';
-import Header from '@/components/Header';
+import Header, { Weather } from '@/components/Header';
 import ChatBot from "@/components/core/ChatBot";
 
 export type Unit = 'metric' | 'imperial' | 'standard';
 
 export default function App() {
+	const [weatherPreference, setWeatherPreference] = useState<Weather>('sunny')
+	
 	const [location, setLocation] = useState<string>('');
 	const [currentWeather, setCurrentWeather] = useState<string | undefined>(undefined);
 	
@@ -38,7 +40,7 @@ export default function App() {
 	return (
 		<>
 			{/* HEADER */}
-			<Header></Header>
+			<Header weatherPreference={weatherPreference} setWeatherPreference={setWeatherPreference}></Header>
 			
 			<main className={'flex flex-col items-center justify-center gap-y-4 py-12 w-full md:w-1/2 px-4 place-self-center'}>
 				<div className={'flex flex-col items-center gap-y-2 border border-gray-300 rounded-lg p-8 w-full'}>
@@ -67,7 +69,7 @@ export default function App() {
 			</main>
 			
 			<div className={'flex items-center justify-center grow overflow-y-auto pb-12'}>
-				<ChatBot temperature={currentWeather} unit={unit}></ChatBot>
+				<ChatBot temperature={currentWeather} unit={unit} weatherPreference={weatherPreference}></ChatBot>
 			</div>
 		</>
 	)
