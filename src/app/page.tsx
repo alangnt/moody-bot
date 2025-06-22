@@ -117,7 +117,7 @@ export default function App() {
 						</div>
 					</main>
 					
-					<div className={'flex items-center justify-center grow overflow-y-auto pb-12'}>
+					<div className={'flex items-center justify-center grow overflow-y-auto'}>
 						<ChatBot temperature={currentWeather} unit={unit} weatherPreference={weatherPreference} location={location}></ChatBot>
 					</div>
 				</>
