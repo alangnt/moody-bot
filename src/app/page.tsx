@@ -40,8 +40,8 @@ export default function App() {
 			{/* HEADER */}
 			<Header></Header>
 			
-			<main className={'flex flex-col items-center justify-center gap-y-4 py-12'}>
-				<div className={'flex flex-col items-center gap-y-2 border border-gray-300 rounded-lg p-8 w-fit'}>
+			<main className={'flex flex-col items-center justify-center gap-y-4 py-12 w-full md:w-1/2 px-4 place-self-center'}>
+				<div className={'flex flex-col items-center gap-y-2 border border-gray-300 rounded-lg p-8 w-full'}>
 					<input type="text" className={'border border-gray-200 rounded-lg p-2 mb-4'} onChange={(e) => setLocation(e.target.value)} />
 					<button className={'bg-foreground text-background border border-gray-200 rounded-lg py-2 px-4 w-fit hover:bg-background hover:text-foreground duration-100 transition-all cursor-pointer'} onClick={() => getCurrentWeather()}>
 						What&apos;s the Weather like ?
