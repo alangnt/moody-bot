@@ -23,11 +23,12 @@ export default function App() {
 		const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appId=${process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY}&units=${newUnit ? newUnit : unit}`);
 		
 		const result = await response.json();
-		
+		console.log(result);
 		if (result.cod === '404') {
 			return setErrorMessage('No city found, please try again');
 		}
 		
+		setLocation(result.name);
 		setErrorMessage(undefined);
 		setCurrentWeather(result.main.temp);
 	}
@@ -44,7 +45,7 @@ export default function App() {
 			
 			<main className={'flex flex-col items-center justify-center gap-y-4 py-12 w-full md:w-1/2 px-4 place-self-center'}>
 				<div className={'flex flex-col items-center gap-y-2 border border-gray-300 rounded-lg p-8 w-full'}>
-					<input type="text" className={'border border-gray-200 rounded-lg p-2 mb-4'} onChange={(e) => setLocation(e.target.value)} />
+					<input type="text" className={'border border-gray-200 rounded-lg p-2 mb-4'} value={location} onChange={(e) => setLocation(e.target.value)} />
 					<button className={'bg-foreground text-background border border-gray-200 rounded-lg py-2 px-4 w-fit hover:bg-background hover:text-foreground duration-100 transition-all cursor-pointer'} onClick={() => getCurrentWeather()}>
 						What&apos;s the Weather like ?
 					</button>
@@ -69,7 +70,7 @@ export default function App() {
 			</main>
 			
 			<div className={'flex items-center justify-center grow overflow-y-auto pb-12'}>
-				<ChatBot temperature={currentWeather} unit={unit} weatherPreference={weatherPreference}></ChatBot>
+				<ChatBot temperature={currentWeather} unit={unit} weatherPreference={weatherPreference} location={location}></ChatBot>
 			</div>
 		</>
 	)

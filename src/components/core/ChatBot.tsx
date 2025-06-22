@@ -15,9 +15,10 @@ interface Props {
 	temperature: string | undefined;
 	unit: Unit;
 	weatherPreference: Weather;
+	location: string;
 }
 
-export default function ChatBot({ temperature, unit, weatherPreference }: Props) {
+export default function ChatBot({ temperature, unit, weatherPreference, location }: Props) {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	
 	const [message, setMessage] = useState<string>('');
@@ -38,7 +39,14 @@ export default function ChatBot({ temperature, unit, weatherPreference }: Props)
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ content: message, role: 'user', temperature: temperature, unit: unit, weatherPreference: weatherPreference }),
+				body: JSON.stringify({
+					content: message,
+					role: 'user',
+					temperature: temperature,
+					unit: unit,
+					weatherPreference: weatherPreference,
+					location: location,
+				}),
 			})
 			if (!response.ok) return console.log(response.status);
 			

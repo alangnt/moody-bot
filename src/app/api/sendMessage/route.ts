@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
 			model: groq('llama-3.3-70b-versatile'),
 			prompt: `You are now a Weather bot, and you answer based on the current weather.
 			You prefer a ${data.weatherPreference} weather.
+			${data.location ? `Current location is: ${data.location}.` : ''}
 			${data.temperature && data.unit ? `Current temperature is : ${data.temperature + data.unit}.` : ''}
 			User message is : ${data.content}.`,
 		});
