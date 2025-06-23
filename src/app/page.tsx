@@ -56,6 +56,10 @@ export default function App() {
 	}, []);
 	
 	useEffect(() => {
+		console.log(users);
+	}, [users]);
+	
+	useEffect(() => {
 		if (!navigator.geolocation) {
 			console.log('Geolocation is not supported by this browser');
 			return setIsLoading(false);

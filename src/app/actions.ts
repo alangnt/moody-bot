@@ -1,9 +1,9 @@
 // All the DB actions
 'use server'
 
-import { Prisma } from "@prisma/client";
+// import { Prisma } from "@prisma/client";
 import prisma from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
+// import { revalidatePath } from 'next/cache';
 
 // READ actions
 export async function getUsers() {
@@ -24,6 +24,7 @@ export async function getUsers() {
 }
 
 // CREATE actions
+/*
 export async function createUser({ email, name }: { email: string; name?: string }) {
 	if (!email) throw new Error('Email is required');
 	
@@ -45,3 +46,4 @@ export async function createUser({ email, name }: { email: string; name?: string
 		throw new Error('Failed to create user');
 	}
 }
+*/
