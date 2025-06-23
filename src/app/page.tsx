@@ -17,8 +17,6 @@ type Coordinates = {
 }
 
 export default function App() {
-	let user: User;
-	
 	const [userCoordinates, setUserCoordinates] = useState<Coordinates | null>(null);
 	const [weatherPreference, setWeatherPreference] = useState<Weather>('sunny')
 	
