@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { RefreshCcw } from 'lucide-react';
-import { Unit } from "@/app/page";
-import { Weather } from "@/components/Header";
+import { Unit } from '@/app/page';
+import { Weather } from '@/components/Header';
+import { createMessage } from '@/app/actions';
 
-type Role = 'user' | 'bot';
-type Message = {
+export type Role = 'user' | 'bot';
+export type Message = {
 	content: string;
 	role: Role;
 }
@@ -34,6 +35,8 @@ export default function ChatBot({ temperature, unit, weatherPreference, location
 		setMessagesList([...messagesList, { content: message, role: 'user' }]);
 		
 		try {
+			await createMessage({ content: message, role: 'user' });
+			
 			const response = await fetch('/api/sendMessage', {
 				method: 'POST',
 				headers: {

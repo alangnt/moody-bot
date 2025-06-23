@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse }  from 'next/server';
 import { groq } from '@ai-sdk/groq';
 import { generateText } from 'ai';
+import { createMessage } from '@/app/actions';
+import { Role } from '@/components/core/ChatBot';
 
 export async function POST(req: NextRequest) {
 	const apiKey = process.env.GROQ_API_KEY || '';
@@ -18,6 +20,8 @@ export async function POST(req: NextRequest) {
 			${data.temperature && data.unit ? `Current temperature is : ${data.temperature + data.unit}.` : ''}
 			User message is : ${data.content}.`,
 		});
+		
+		await createMessage({ content: text as string, role: 'bot' as Role });
 		
 		return NextResponse.json({ message: text, role: 'bot' }, { status: 200 });
 	} catch (error) {

@@ -26,7 +26,7 @@ model User {
 model Message {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   content String
-  anonymousId String
+  role String
   createdAt DateTime @default(now())
 
   // Relation Fields

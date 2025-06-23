@@ -2,8 +2,9 @@
 'use server'
 
 import prisma from '@/lib/prisma';
-// import { revalidatePath } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { Message } from '@/components/core/ChatBot';
 
 // READ actions
 /*
@@ -45,7 +46,7 @@ export async function getOrCreateAnonymousUser() {
 		}
 		
 		console.log('Creating new anonymous user with ID:', anonymousId);
-		 return await prisma.user.create({
+	  return await prisma.user.create({
 			data: {
 				anonymousId,
 			},
@@ -53,5 +54,31 @@ export async function getOrCreateAnonymousUser() {
 	} catch (error) {
 		console.error("Failed to get or create anonymous user:", error);
 		throw new Error("Could not get or create anonymous user.");
+	}
+}
+
+export async function createMessage({ content, role }: Message) {
+	if (!content || !role) throw new Error('Content and role are required');
+	
+	try {
+		const author = await getOrCreateAnonymousUser();
+		
+		await prisma.message.create({
+			data: {
+				content,
+				role,
+				authorId: author.id,
+			}
+		});
+		
+		revalidatePath('/');
+		
+		return { success: 'Message sent successfully!' };
+	} catch (error) {
+		console.error('Failed to create message:', error);
+		if (error instanceof Error) {
+			return { error: error.message };
+		}
+		return { error: 'An internal server error occurred.' };
 	}
 }
