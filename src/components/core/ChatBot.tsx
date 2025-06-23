@@ -32,6 +32,11 @@ export default function ChatBot({ temperature, unit, weatherPreference, location
 	
 	const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 	
+	const getMessagesList = async () => {
+		const messages = await getMessages();
+		setMessagesList(messages);
+	}
+	
 	const sendMessage = async () => {
 		if (!message.length) return setErrorMessage('Field cannot be empty');
 		
@@ -39,7 +44,7 @@ export default function ChatBot({ temperature, unit, weatherPreference, location
 		setIsLoading(true);
 		
 		try {
-			await createMessage({ content: message, role: 'user' });
+			createMessage({ content: message, role: 'user' }).then(async () => await getMessagesList());
 			
 			const response = await fetch('/api/sendMessage', {
 				method: 'POST',
@@ -56,21 +61,17 @@ export default function ChatBot({ temperature, unit, weatherPreference, location
 				}),
 			})
 			if (!response.ok) return console.error(response.status);
-			
-			setTimeout(() => {
-				setMessage('');
-				setIsLoading(false);
-			}, 1000);
 		} catch (error) {
 			console.log(error);
 		} finally {
-			getMessages().then((messages) => setMessagesList(messages));
+			await getMessagesList();
+			setMessage('');
 			setIsLoading(false);
 		}
 	}
 	
 	useEffect(() => {
-		getMessages().then((messages) => setMessagesList(messages));
+		getMessagesList().then(() => setIsLoading(false));
 	}, []);
 	
 	return (

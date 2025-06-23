@@ -17,6 +17,8 @@ type Coordinates = {
 }
 
 export default function App() {
+	let user: User;
+	
 	const [userCoordinates, setUserCoordinates] = useState<Coordinates | null>(null);
 	const [weatherPreference, setWeatherPreference] = useState<Weather>('sunny')
 	
@@ -48,7 +50,7 @@ export default function App() {
 	};
 	
 	useEffect(() => {
-		getOrCreateAnonymousUser().then((data: User) => console.log(data));
+		getOrCreateAnonymousUser().then(() => console.log('Welcome back !'));
 	}, []);
 	
 	useEffect(() => {
