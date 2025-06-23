@@ -5,11 +5,6 @@ import Header, { Weather } from '@/components/Header';
 import ChatBot from '@/components/core/ChatBot';
 import { getOrCreateAnonymousUser } from '@/app/actions';
 
-type User = {
-	anonymousId: string;
-	createdAt: Date;
-}
-
 export type Unit = 'metric' | 'imperial' | 'standard';
 type Coordinates = {
 	latitude: number;
