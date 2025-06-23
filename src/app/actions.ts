@@ -28,7 +28,6 @@ export async function getUsers() {
 export async function getMessages() {
 	try {
 		const author = await getOrCreateAnonymousUser();
-		console.log(author);
 		
 		return await prisma.message.findMany({
 			where: {
