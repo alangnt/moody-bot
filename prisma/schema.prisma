@@ -16,7 +16,20 @@ datasource db {
 
 model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  email String @unique
-  name String?
+  anonymousId String @unique
   createdAt DateTime @default(now())
+
+  // Relation Fields
+  messages Message[]
+}
+
+model Message {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  content String
+  anonymousId String
+  createdAt DateTime @default(now())
+
+  // Relation Fields
+  author User @relation(fields: [authorId], references: [id])
+  authorId String @db.ObjectId
 }

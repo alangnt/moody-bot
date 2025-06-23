@@ -3,12 +3,10 @@
 import { useState, useEffect } from 'react';
 import Header, { Weather } from '@/components/Header';
 import ChatBot from '@/components/core/ChatBot';
-import { getUsers } from '@/app/actions';
+import { getOrCreateAnonymousUser } from '@/app/actions';
 
 type User = {
-	id: string;
-	email: string;
-	name: string | null;
+	anonymousId: string;
 	createdAt: Date;
 }
 
@@ -19,8 +17,6 @@ type Coordinates = {
 }
 
 export default function App() {
-	const [users, setUsers] = useState<User[]>([]);
-	
 	const [userCoordinates, setUserCoordinates] = useState<Coordinates | null>(null);
 	const [weatherPreference, setWeatherPreference] = useState<Weather>('sunny')
 	
@@ -52,12 +48,8 @@ export default function App() {
 	};
 	
 	useEffect(() => {
-		getUsers().then((data) => setUsers(data));
+		getOrCreateAnonymousUser().then((data: User) => console.log(data));
 	}, []);
-	
-	useEffect(() => {
-		console.log(users);
-	}, [users]);
 	
 	useEffect(() => {
 		if (!navigator.geolocation) {

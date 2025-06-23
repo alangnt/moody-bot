@@ -1,11 +1,12 @@
 // All the DB actions
 'use server'
 
-// import { Prisma } from "@prisma/client";
 import prisma from '@/lib/prisma';
 // import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 
 // READ actions
+/*
 export async function getUsers() {
 	try {
 		return await prisma.user.findMany({
@@ -22,28 +23,35 @@ export async function getUsers() {
 		throw new Error('Failed to fetch users');
 	}
 }
+*/
 
 // CREATE actions
-/*
-export async function createUser({ email, name }: { email: string; name?: string }) {
-	if (!email) throw new Error('Email is required');
+export async function getOrCreateAnonymousUser() {
+	const cookieStore = await cookies();
+	const anonymousId = cookieStore.get('anon_id')?.value;
+	
+	if (!anonymousId) {
+		throw new Error('Anonymous ID cookie not found.');
+	}
 	
 	try {
-		const user = await prisma.user.create({
-			data: {
-				email,
-				name,
-			},
+		const user = await prisma.user.findUnique({
+			where: { anonymousId },
 		});
 		
-		// Revalidate the home page to show the new user
-		revalidatePath('/');
+		if (user) {
+			console.log('Found existing anonymous user:', user.id);
+			return user;
+		}
 		
-		return user;
+		console.log('Creating new anonymous user with ID:', anonymousId);
+		 return await prisma.user.create({
+			data: {
+				anonymousId,
+			},
+		});
 	} catch (error) {
-		// Handle duplicate email error
-		if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') throw new Error('A user with this email already exists');
-		throw new Error('Failed to create user');
+		console.error("Failed to get or create anonymous user:", error);
+		throw new Error("Could not get or create anonymous user.");
 	}
 }
-*/
