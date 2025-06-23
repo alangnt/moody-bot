@@ -4,7 +4,7 @@
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { Message } from '@/components/core/ChatBot';
+import { DraftMessage } from '@/components/core/ChatBot';
 
 // READ actions
 /*
@@ -25,6 +25,28 @@ export async function getUsers() {
 	}
 }
 */
+export async function getMessages() {
+	try {
+		const author = await getOrCreateAnonymousUser();
+		console.log(author);
+		
+		return await prisma.message.findMany({
+			where: {
+				authorId: author.id
+			},
+			orderBy: {
+				createdAt: 'asc',
+			},
+			cacheStrategy: {
+				swr: 120,
+				tags: [`messages_list_${author.id}`],
+			}
+		});
+	} catch (error) {
+		console.error('Error fetching messages: ', error);
+		throw new Error('Failed to fetch messages');
+	}
+}
 
 // CREATE actions
 export async function getOrCreateAnonymousUser() {
@@ -57,7 +79,7 @@ export async function getOrCreateAnonymousUser() {
 	}
 }
 
-export async function createMessage({ content, role }: Message) {
+export async function createMessage({ content, role }: DraftMessage) {
 	if (!content || !role) throw new Error('Content and role are required');
 	
 	try {

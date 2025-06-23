@@ -1,15 +1,20 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RefreshCcw } from 'lucide-react';
 import { Unit } from '@/app/page';
 import { Weather } from '@/components/Header';
-import { createMessage } from '@/app/actions';
+import { createMessage, getMessages } from '@/app/actions';
 
 export type Role = 'user' | 'bot';
+
+export type DraftMessage = Pick<Message, 'content' | 'role'>
 export type Message = {
+	id: string;
 	content: string;
 	role: Role;
+	authorId: string;
+	createdAt: Date;
 }
 
 interface Props {
@@ -32,7 +37,6 @@ export default function ChatBot({ temperature, unit, weatherPreference, location
 		
 		setErrorMessage(undefined);
 		setIsLoading(true);
-		setMessagesList([...messagesList, { content: message, role: 'user' }]);
 		
 		try {
 			await createMessage({ content: message, role: 'user' });
@@ -51,20 +55,23 @@ export default function ChatBot({ temperature, unit, weatherPreference, location
 					location: location,
 				}),
 			})
-			if (!response.ok) return console.log(response.status);
-			
-			const result = await response.json();
+			if (!response.ok) return console.error(response.status);
 			
 			setTimeout(() => {
-				setMessagesList(prev => [...prev, { content: result.message, role: result.role }]);
 				setMessage('');
 				setIsLoading(false);
 			}, 1000);
 		} catch (error) {
 			console.log(error);
+		} finally {
+			getMessages().then((messages) => setMessagesList(messages));
 			setIsLoading(false);
 		}
 	}
+	
+	useEffect(() => {
+		getMessages().then((messages) => setMessagesList(messages));
+	}, []);
 	
 	return (
 		<section className={'flex flex-col gap-y-4 items-center pb-16 w-full'}>
