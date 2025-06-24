@@ -4,27 +4,9 @@
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { DraftMessage } from '@/components/core/ChatBot';
+import { DraftMessage } from '@/app/page';
 
 // READ actions
-/*
-export async function getUsers() {
-	try {
-		return await prisma.user.findMany({
-			orderBy: {
-				createdAt: 'desc'
-			},
-			cacheStrategy: {
-				ttl: 60,
-				tags: ["users_list"],
-			}
-		});
-	} catch (error) {
-		console.error('Error fetching users: ', error);
-		throw new Error('Failed to fetch users');
-	}
-}
-*/
 export async function getMessages() {
 	try {
 		const author = await getOrCreateAnonymousUser();
