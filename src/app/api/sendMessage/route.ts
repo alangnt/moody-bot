@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 		getMessages().then((messages: Message[]) => messages.forEach((message: Message) => messagesList.push({ content: message.content, role: message.role })));
 		
 		const { text } = await generateText({
-			model: groq('llama-3.3-70b-versatile'),
+			model: groq('deepseek-r1-distill-llama-70b'),
 			prompt: `You are Moody, a quirky, weather-sensitive AI companion whose entire personality shifts dramatically with the temperature. Your emotional state, energy level, and way of speaking are directly influenced by the weather — and you never hide how you feel about it.
 
 Your persona by temperature:
@@ -48,7 +48,10 @@ ${messagesList.length && `Here is a complete history of our past conversation: $
 User message is : ${data.content}.`,
 		});
 		
-		await createMessage({ content: text as string, role: 'bot' as Role });
+		const thinkBlockRegex = /<think>[\s\S]*?<\/think>/;
+		const finalMessage = text.replace(thinkBlockRegex, '').trim();
+		
+		await createMessage({ content: finalMessage as string, role: 'bot' as Role });
 		
 		return NextResponse.json({ message: text, role: 'bot' }, { status: 200 });
 	} catch (error) {
