@@ -32,10 +32,13 @@ export default function App() {
 	const [location, setLocation] = useState<string>('');
 	const [currentWeather, setCurrentWeather] = useState<string | undefined>(undefined);
 	
+	const [isPageLoading, setIsPageLoading] = useState<boolean>(true);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	
 	const [message, setMessage] = useState<string>('');
 	const [messagesList, setMessagesList] = useState<Message[]>([]);
+	
+	const [hasUserSentMessage, setHasUserSentMessage] = useState<boolean>(false);
 	
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	
@@ -88,32 +91,55 @@ export default function App() {
 	}
 	
 	const sendMessage = async () => {
-		setIsLoading(true);
-		
 		try {
-			createMessage({ content: message, role: 'user' }).then(async () => await getMessagesList());
+			const messageToSend = message;
+			setMessage('');
 			
+			await createMessage({ content: messageToSend, role: 'user' });
+	
 			const response = await fetch('/api/sendMessage', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
-					content: message,
+					content: messageToSend, // Send the original message content
 					role: 'user',
 					temperature: currentWeather,
 					location: location,
 				}),
-			})
-			if (!response.ok) return console.error(response.status);
+			});
+			
+			if (!response.ok) {
+				console.error('Failed to get a response from the bot:', response.status);
+				return;
+			}
+			
+			await getMessagesList();
+			setIsLoading(true);
+			
+			setTimeout(() => {
+				setHasUserSentMessage(true);
+			}, 2000);
 		} catch (error) {
 			console.log(error);
-		} finally {
-			await getMessagesList();
-			setMessage('');
-			setIsLoading(false);
 		}
-	}
+	};
+	
+	useEffect(() => {
+		if (hasUserSentMessage) {
+			getMessagesList().then(() => {
+				setHasUserSentMessage(false);
+				setIsLoading(false);
+			});
+		}
+	}, [hasUserSentMessage]);
+	
+	useEffect(() => {
+		if (hasUserSentMessage) {
+			getMessagesList().then(() => setHasUserSentMessage(false));
+		}
+	}, [hasUserSentMessage]);
 	
 	useEffect(() => {
 		getOrCreateAnonymousUser().then(() => console.log('Welcome back !'));
@@ -163,7 +189,7 @@ export default function App() {
 	}, [userCoordinates, currentWeather]);
 	
 	useEffect(() => {
-		getMessagesList().then(() => setIsLoading(false));
+		getMessagesList().then(() => setIsPageLoading(false));
 	}, []);
 	
 	useEffect(() => {
@@ -172,111 +198,113 @@ export default function App() {
 	
 	return (
 		<div className={`min-h-screen bg-gradient-to-br ${backgroundGradient} transition-all duration-1000 ease-in-out`}>
-			<div className="container mx-auto px-4 py-8 max-w-4xl">
-				{/* Header */}
-				<div className="text-center mb-8">
-					<div className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-md rounded-full px-6 py-3 mb-4">
-						<span className="text-3xl">{getMoodEmoji()}</span>
-						<h1 className="text-2xl font-bold text-white">Moody</h1>
-					</div>
-					<p className="text-white/80 text-lg">Your weather-sensitive AI companion</p>
-				</div>
-				
-				{/* Chat Container */}
-				<Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-2xl rounded-3xl overflow-hidden">
-					<div className="h-96 overflow-y-auto p-6 space-y-4">
-						{messagesList.length === 0 && (
-							<div className="text-center text-white/70 py-8">
-								<div className="text-4xl mb-4">{getMoodEmoji()}</div>
-								<p className="text-lg mb-2">Hi! I&apos;m Moody, your weather-sensitive AI friend!</p>
-								<p className="text-sm">Ask me anything, but watch out, my mood can change! ☀️🌧️❄️</p>
-							</div>
-						)}
-						
-						{messagesList.map((message, index) => (
-							<div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-								<div
-									className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
-										message.role === "user"
-											? "bg-white/90 text-gray-800 backdrop-blur-sm"
-											: "bg-black/20 text-white backdrop-blur-sm border border-white/20"
-									}`}
-								>
-									{message.role === "bot" && (
-										<div className="flex items-center gap-2 mb-2">
-											<span className="text-lg">{getMoodEmoji()}</span>
-											<span className="text-xs text-white/70 uppercase tracking-wide">Moody</span>
-										</div>
-									)}
-									
-									<div key={index} className="whitespace-pre-wrap">
-										{message.content}
-									</div>
-									
-									<div ref={messagesEndRef} />
-								</div>
-							</div>
-						))}
-						
-						{isLoading && (
-							<div className="flex justify-start">
-								<div className="bg-black/20 text-white backdrop-blur-sm border border-white/20 rounded-2xl px-4 py-3 max-w-xs">
-									<div className="flex items-center gap-2">
-										<span className="text-lg">{getMoodEmoji()}</span>
-										<div className="flex gap-1">
-											<div className="w-2 h-2 bg-white/60 rounded-full animate-bounce"></div>
-											<div
-												className="w-2 h-2 bg-white/60 rounded-full animate-bounce"
-												style={{ animationDelay: "0.1s" }}
-											></div>
-											<div
-												className="w-2 h-2 bg-white/60 rounded-full animate-bounce"
-												style={{ animationDelay: "0.2s" }}
-											></div>
-										</div>
-									</div>
-								</div>
-							</div>
-						)}
+			{isPageLoading ? null : (
+				<div className="container mx-auto px-4 py-8 max-w-4xl">
+					{/* Header */}
+					<div className="text-center mb-8">
+						<div className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-md rounded-full px-6 py-3 mb-4">
+							<span className="text-3xl">{getMoodEmoji()}</span>
+							<h1 className="text-2xl font-bold text-white">Moody</h1>
+						</div>
+						<p className="text-white/80 text-lg">Your weather-sensitive AI companion</p>
 					</div>
 					
-					{/* Input Form */}
-					<div className="p-6 border-t border-white/20">
-						<div className="flex gap-3">
-							<Input
-								value={message}
-								onChange={(e) => setMessage(e.target.value)}
-								placeholder="Ask me anything..."
-								className="flex-1 bg-white/20 border-white/30 text-white placeholder:text-white/60 rounded-full px-6 py-3 backdrop-blur-sm focus:bg-white/30 transition-all"
-								disabled={isLoading}
-							/>
-							<Button
-								disabled={isLoading || !message.trim()}
-								className="bg-white/20 hover:bg-white/30 border border-white/30 text-white rounded-full px-6 backdrop-blur-sm transition-all"
-								onClick={() => sendMessage()}
-							>
-								<Send className="w-4 h-4" />
-							</Button>
+					{/* Chat Container */}
+					<Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-2xl rounded-3xl overflow-hidden">
+						<div className="h-96 overflow-y-auto p-6 space-y-4">
+							{messagesList.length === 0 && (
+								<div className="text-center text-white/70 py-8">
+									<div className="text-4xl mb-4">{getMoodEmoji()}</div>
+									<p className="text-lg mb-2">Hi! I&apos;m Moody, your weather-sensitive AI friend!</p>
+									<p className="text-sm">Ask me anything, but watch out, my mood can change! ☀️🌧️❄️</p>
+								</div>
+							)}
+							
+							{messagesList.map((message, index) => (
+								<div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+									<div
+										className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
+											message.role === "user"
+												? "bg-white/90 text-gray-800 backdrop-blur-sm"
+												: "bg-black/20 text-white backdrop-blur-sm border border-white/20"
+										}`}
+									>
+										{message.role === "bot" && (
+											<div className="flex items-center gap-2 mb-2">
+												<span className="text-lg">{getMoodEmoji()}</span>
+												<span className="text-xs text-white/70 uppercase tracking-wide">Moody</span>
+											</div>
+										)}
+										
+										<div key={index} className="whitespace-pre-wrap">
+											{message.content}
+										</div>
+										
+										<div ref={messagesEndRef} />
+									</div>
+								</div>
+							))}
+							
+							{isLoading && (
+								<div className="flex justify-start">
+									<div className="bg-black/20 text-white backdrop-blur-sm border border-white/20 rounded-2xl px-4 py-3 max-w-xs">
+										<div className="flex items-center gap-2">
+											<span className="text-lg">{getMoodEmoji()}</span>
+											<div className="flex gap-1">
+												<div className="w-2 h-2 bg-white/60 rounded-full animate-bounce"></div>
+												<div
+													className="w-2 h-2 bg-white/60 rounded-full animate-bounce"
+													style={{ animationDelay: "0.1s" }}
+												></div>
+												<div
+													className="w-2 h-2 bg-white/60 rounded-full animate-bounce"
+													style={{ animationDelay: "0.2s" }}
+												></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							)}
 						</div>
 						
-						<div className="flex items-center gap-2 bg-white/20 rounded-lg p-2 mt-2">
-							{getWeatherIcon(Number(currentWeather))}
-							<span className="text-sm">
+						{/* Input Form */}
+						<div className="p-6 border-t border-white/20">
+							<div className="flex gap-3">
+								<Input
+									value={message}
+									onChange={(e) => setMessage(e.target.value)}
+									placeholder="Ask me anything..."
+									className="flex-1 bg-white/20 border-white/30 text-black placeholder:text-white/60 rounded-full px-6 py-3 backdrop-blur-sm focus:bg-white/30 transition-all"
+									disabled={isLoading}
+								/>
+								<Button
+									disabled={isLoading || !message.trim()}
+									className="bg-white/20 hover:bg-white/30 border border-white/30 text-white rounded-full px-6 backdrop-blur-sm transition-all"
+									onClick={() => sendMessage()}
+								>
+									<Send className="w-4 h-4" />
+								</Button>
+							</div>
+							
+							<div className="flex items-center gap-2 bg-white/20 rounded-lg p-2 mt-2 text-black/70">
+								{getWeatherIcon(Number(currentWeather))}
+								<span className="text-sm">
 	              {location}: {currentWeather}°F
 	            </span>
+							</div>
+						</div>
+					</Card>
+					
+					{/* Mood Indicator */}
+					<div className="text-center mt-6">
+						<div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2">
+							<span className="text-sm text-white/80">Current mood:</span>
+							<span className="text-lg">{getMoodEmoji()}</span>
+							<span className="text-sm text-white font-medium capitalize">{currentMood}</span>
 						</div>
 					</div>
-				</Card>
-				
-				{/* Mood Indicator */}
-				<div className="text-center mt-6">
-					<div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2">
-						<span className="text-sm text-white/80">Current mood:</span>
-						<span className="text-lg">{getMoodEmoji()}</span>
-						<span className="text-sm text-white font-medium capitalize">{currentMood}</span>
-					</div>
 				</div>
-			</div>
+			)}
 		</div>
 	)
 }
