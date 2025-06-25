@@ -2,7 +2,7 @@ import { NextRequest, NextResponse }  from 'next/server';
 import { groq } from '@ai-sdk/groq';
 import { generateText } from 'ai';
 import { createMessage, getMessages } from '@/app/actions';
-import { Role, Message } from '@/app/page';
+import { Role } from '@/app/page';
 
 export async function POST(req: NextRequest) {
 	const apiKey = process.env.GROQ_API_KEY || '';
