@@ -1,6 +1,6 @@
 # 🌤️ Moody – Your Weather-Based Mood Companion
 
-Moody is a modern, minimalist, and playful web app that reacts to your local weather and delivers personalized mood-boosting content. Whether you're facing a cloudy afternoon or a chilly morning, Moody generates motivational messages, GIFs, and song suggestions to brighten your day.
+Moody is a modern, minimalist, and playful web app that reacts to your local weather and delivers personalized mood-boosting content. Whether you're facing a cloudy afternoon or a chilly morning, Moody generates motivational messages, and song suggestions to brighten your day.
 
 ---
 
