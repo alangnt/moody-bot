@@ -12,8 +12,7 @@ export async function POST(req: NextRequest) {
 		const data = await req.json();
 		if (!data.content || !data.role) return NextResponse.json({ message: 'No message found' }, { status: 409 });
 		
-		const messagesList: { content: string; role: Role }[] = [];
-		getMessages().then((messages: Message[]) => messages.forEach((message: Message) => messagesList.push({ content: message.content, role: message.role })));
+		const messagesList: { content: string; role: Role }[] = await getMessages();
 		
 		const { text } = await generateText({
 			model: groq('deepseek-r1-distill-llama-70b'),

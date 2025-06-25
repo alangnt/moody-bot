@@ -273,6 +273,11 @@ export default function App() {
 								<Input
 									value={message}
 									onChange={(e) => setMessage(e.target.value)}
+									onKeyDown={async (e) => {
+										if (e.key === 'Enter' && !isLoading && message.trim()) {
+											await sendMessage();
+										}
+									}}
 									placeholder="Ask me anything..."
 									className="flex-1 bg-white/20 border-white/30 text-black placeholder:text-white/60 rounded-full px-6 py-3 backdrop-blur-sm focus:bg-white/30 transition-all"
 									disabled={isLoading}
